@@ -1,4 +1,7 @@
 StartupPreferencesLoader default executeAtomicItems: {			
+	| fontFamilyName |
+
+	fontFamilyName := 'Fantasque Sans Mono'.
 
 	(StartupAction
 		name: 'Show any startup action errors'
@@ -58,30 +61,25 @@ StartupPreferencesLoader default executeAtomicItems: {
 		runOnce: true).
 
 	(StartupAction
-		name: 'Load Fantasque Sans Mono Font'
+		name: 'Load Font'
 		code: [ 
+			| customNormalFont customBoldFont |
+
 			FreeTypeFontProvider current updateEmbeddedFreeTypeFonts. 
 			FreeTypeFontProvider current updateFromSystem.
 		
-			StandardFonts
-				defaultFont: (LogicalFont
-					familyName: 'Fantasque Sans Mono'
-					pointSize: 11
-					stretchValue: 5
-					weightValue: 400
-					slantValue: 0).
-"			GraphicFontSettings resetAllFontToDefault."
-			StandardFonts
-				codeFont: (LogicalFont
-					familyName: 'Fantasque Sans Mono'
-					pointSize: 11
-					stretchValue: 5
-					weightValue: 300
-					slantValue: 0) forceNotBold.
-			StandardFonts
-				windowTitleFont: (LogicalFont
-					familyName: 'Fantasque Sans Mono'
-					pointSize: 11) forceBold ]
+			customNormalFont := (LogicalFont
+				familyName: 'Fantasque Sans Mono'
+				pointSize: 11
+				stretchValue: 5
+				weightValue: 300
+				slantValue: 0) forceNotBold.
+			customBoldFont := (LogicalFont
+				familyName: 'Fantasque Sans Mono'
+				pointSize: 11) forceBold.  
+				
+			StandardFonts setAllStandardFontsTo: customNormalFont.
+			StandardFonts windowTitleFont: customBoldFont ]
 		runOnce: true).
 		
 		(StartupAction	
@@ -90,7 +88,11 @@ StartupPreferencesLoader default executeAtomicItems: {
 				Author fullName: 'HernanMoralesDurand'.
 				" Setup window title "
 				(Smalltalk version beginsWith: 'Pharo1')
-					ifTrue: [ World worldState worldRenderer windowTitle: FileLocator imageDirectory fullName.
-				Smalltalk tools workspace open. ] ]		
+					ifTrue: [ 
+						| worldRenderer |
+						worldRenderer := World worldState worldRenderer.
+						worldRenderer windowTitle: FileLocator imageDirectory fullName.
+						worldRenderer class autoSetCanvasScaleFactor: true.
+						Smalltalk tools workspace open. ] ]		
 			runOnce: true).
 }.
