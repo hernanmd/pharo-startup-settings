@@ -1,7 +1,4 @@
 StartupPreferencesLoader default executeAtomicItems: {			
-	| fontFamilyName |
-
-	fontFamilyName := 'Fantasque Sans Mono'.
 
 	(StartupAction
 		name: 'Show any startup action errors'
@@ -13,18 +10,29 @@ StartupPreferencesLoader default executeAtomicItems: {
 	(StartupAction
 		name: 'Iceberg Settings'
 		code: [
+
+			Smalltalk at: #Author 
+				ifPresent: [ : authorClass | authorClass fullName: 'HernanMoralesDurand' ]
+				ifAbsent: [ nil ].
 			IceTipCommitSettings saveImageOnCommit: false. 
-			IceTipCommitSettings critiquesOnCommit: false.
-			
+			(IceTipCommitSettings class canUnderstand: #critiquesOnCommit:)
+				ifTrue: [ IceTipCommitSettings critiquesOnCommit: false ].
+
 			"Enable loading from private repositories"
 			IceCredentialsProvider providerType: IceNonInteractiveCredentialsProvider.
 			IceCredentialStore current
-		        initialize;
-		        storeCredential: (IceTokenCredentials new
-		                username: 'hernanmd';
-		                token: ('/Users/mvs/git_projects/github.token' asFileReference contents) trimRight;
-		                yourself)
-		        forHostname: 'github.com' ]
+				initialize;
+				storeCredential: (IceTokenCredentials new
+					username: 'hernanmd';
+		 		   	token: '/Users/mvs/git_projects/github.token' asFileReference contents trimRight;
+					yourself)
+				forHostname: 'github.com';
+				storeCredential: (IceTokenCredentials new
+					username: 'hernanmd';
+					token: '/Users/mvs/git_projects/gitlab.token' asFileReference contents trimRight;
+					yourself)
+				forHostname: 'gitlab.com';
+		 		yourself ]
 		runOnce: true).
 
 	(StartupAction
@@ -47,27 +55,25 @@ StartupPreferencesLoader default executeAtomicItems: {
 		name: 'Debugging settings'
 		code: [
 			DebugSession logDebuggerStackToFile: false.
-			Deprecation showWarning: false.
-			Deprecation activateTransformations: false.
+			"Deprecation showWarning: false.
+			Deprecation activateTransformations: false."
 			OupsDebuggerSelector handleDebuggerErrors: true ]
-		runOnce: true).
+		runOnce: true). 
 
 	(StartupAction
 		name: 'Cursor settings'
 		code: [
 			RubCursor defaultWidth: 10.
-			RubCursor period: 0.
-			TextEditor blinkingCursor: false ]
+			RubCursor period: 0 ]
 		runOnce: true).
 
 	(StartupAction
-		name: 'Load Font'
+		name: 'Load Hack Font'
 		code: [ 
 			| customNormalFont customBoldFont |
-
 			FreeTypeFontProvider current updateEmbeddedFreeTypeFonts. 
 			FreeTypeFontProvider current updateFromSystem.
-		
+
 			customNormalFont := (LogicalFont
 				familyName: 'Fantasque Sans Mono'
 				pointSize: 11
@@ -76,8 +82,8 @@ StartupPreferencesLoader default executeAtomicItems: {
 				slantValue: 0) forceNotBold.
 			customBoldFont := (LogicalFont
 				familyName: 'Fantasque Sans Mono'
-				pointSize: 11) forceBold.  
-				
+				pointSize: 11) forceBold.
+
 			StandardFonts setAllStandardFontsTo: customNormalFont.
 			StandardFonts windowTitleFont: customBoldFont ]
 		runOnce: true).
@@ -85,14 +91,11 @@ StartupPreferencesLoader default executeAtomicItems: {
 		(StartupAction	
 			name: 'Basic Initialization'
 			code: [
-				Author fullName: 'HernanMoralesDurand'.
+				PolymorphSystemSettings uiThemeClass: PharoLightTheme.
+				"Author fullName: 'HernanMoralesDurand'."
 				" Setup window title "
 				(Smalltalk version beginsWith: 'Pharo1')
-					ifTrue: [ 
-						| worldRenderer |
-						worldRenderer := World worldState worldRenderer.
-						worldRenderer windowTitle: FileLocator imageDirectory fullName.
-						worldRenderer class autoSetCanvasScaleFactor: true.
-						Smalltalk tools workspace open. ] ]		
+					ifTrue: [ World worldState worldRenderer windowTitle: FileLocator imageDirectory fullName.
+				Smalltalk tools workspace open. ] ]
 			runOnce: true).
 }.
