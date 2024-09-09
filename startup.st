@@ -57,8 +57,12 @@ StartupPreferencesLoader default executeAtomicItems: {
 			DebugSession logDebuggerStackToFile: false.
 			"Deprecation showWarning: false.
 			Deprecation activateTransformations: false."
-			OupsDebuggerSelector handleDebuggerErrors: true ]
-		runOnce: true). 
+			OupsDebuggerSelector handleDebuggerErrors: true.
+			Smalltalk at: #StDebuggerMethodImplementorExtension 
+				ifPresent: [ : debuggerExtensionClass | debuggerExtensionClass showInDebugger: false ]
+				ifAbsent: [ ]
+			 ]
+		runOnce: true).
 
 	(StartupAction
 		name: 'Cursor settings'
