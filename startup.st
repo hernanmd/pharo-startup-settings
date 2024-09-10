@@ -75,6 +75,8 @@ StartupPreferencesLoader default executeAtomicItems: {
 		name: 'Load Hack Font'
 		code: [ 
 			| customNormalFont customBoldFont |
+
+			" brew install --cask font-fantasque-sans-mono "
 			FreeTypeFontProvider current updateEmbeddedFreeTypeFonts. 
 			FreeTypeFontProvider current updateFromSystem.
 
